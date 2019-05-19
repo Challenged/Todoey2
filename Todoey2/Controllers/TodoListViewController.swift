@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = ["Find Mike", "Buy Eggs", "Destroy Demogorgon"]
+    var itemArray = [Item]()   //["Find Mike", "Buy Eggs", "Destroy Demogorgon"]
 
     let defaults = UserDefaults.standard
 
@@ -18,10 +18,23 @@ class TodoListViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+
+        let newItem = Item()
+        newItem.title = "Find Mike"
+        itemArray.append(newItem)
+
+        let newItem2 = Item()
+        newItem2.title = "Buy Eggs"
+        itemArray.append(newItem2)
+
+        let newItem3 = Item()
+        newItem3.title = "Destroy Demogorgon"
+        itemArray.append(newItem3)
+
+        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
             itemArray = items
+            }
         }
-    }
 
 
     //MARK - TableView Datasource Methods
@@ -31,10 +44,27 @@ class TodoListViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-//        could also use:
+
+//         could also use (to create new cell(s) each time we display them, as opposed to dequeuing and reusing, disappearing cells will be distroyed, and to reappear when scroll back, a new cell will be created):
 //        let cell = UITableViewCell(style: .default, reuseIdentifier: "TodoItemCell")
-        cell.textLabel?.text = itemArray[indexPath.row]
+
+        let item = itemArray[indexPath.row]
+
+        cell.textLabel?.text = item.title
+
+        //Ternary operator ==>
+        //value = condition ? valueIfTrue : valueIfFalse
+
+        cell.accessoryType = item.done ? .checkmark : .none
+
+//        if item.done == true {
+//            cell.accessoryType = .checkmark
+//        } else {
+//            cell.accessoryType = .none
+//        }
+
         return cell
     }
 
@@ -44,12 +74,17 @@ class TodoListViewController: UITableViewController {
 //        print(itemArray[indexPath.row])
         tableView.deselectRow(at: indexPath, animated: true) // making gray highlight go away after ~1 sec
 
-        //adding or removing checkmarks on the items
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        //adding or removing checkmarks on the items ==> commented code ported to TableView Datasource Method "cellForRowAt" with modifications to include the Item class
+
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+
+        tableView.reloadData()
+
+//        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
+//            tableView.cellForRow(at: indexPath)?.accessoryType = .none
+//        } else {
+//            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+//        }
     }
 
     //MARK - Add New Items Button
@@ -63,9 +98,16 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // what will happen upon "Add Item" pressed
             print("Success \(textField.text ?? "XX")")
-            if let newItem = textField.text {
+
+            let newItem = Item()
+            if let newItemText = textField.text {
+                newItem.title = newItemText
                 self.itemArray.append(newItem)
             }
+
+//            if let newItem = textField.text {
+//                self.itemArray.append(newItem)
+//            }
             self.defaults.set(self.itemArray, forKey: "TodoListArray")
             self.tableView.reloadData()
         }
