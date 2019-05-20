@@ -12,28 +12,31 @@ class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()   //["Find Mike", "Buy Eggs", "Destroy Demogorgon"]
 
-    let defaults = UserDefaults.standard
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+
+//    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
+//        let newItem = Item()
+//        newItem.title = "Find Mike"
+//        itemArray.append(newItem)
+//
+//        let newItem2 = Item()
+//        newItem2.title = "Buy Eggs"
+//        itemArray.append(newItem2)
+//
+//        let newItem3 = Item()
+//        newItem3.title = "Destroy Demogorgon"
+//        itemArray.append(newItem3)
 
-        let newItem = Item()
-        newItem.title = "Find Mike"
-        itemArray.append(newItem)
+//        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
+//            itemArray = items
+//            }
+        loadItems()
 
-        let newItem2 = Item()
-        newItem2.title = "Buy Eggs"
-        itemArray.append(newItem2)
-
-        let newItem3 = Item()
-        newItem3.title = "Destroy Demogorgon"
-        itemArray.append(newItem3)
-
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-            }
         }
 
 
@@ -55,7 +58,7 @@ class TodoListViewController: UITableViewController {
         cell.textLabel?.text = item.title
 
         //Ternary operator ==>
-        //value = condition ? valueIfTrue : valueIfFalse
+        //value = condition (a logical statement OR boolean) ? valueIfTrue : valueIfFalse
 
         cell.accessoryType = item.done ? .checkmark : .none
 
@@ -78,7 +81,7 @@ class TodoListViewController: UITableViewController {
 
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
 
-        tableView.reloadData()
+        saveItems()
 
 //        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
 //            tableView.cellForRow(at: indexPath)?.accessoryType = .none
@@ -108,8 +111,21 @@ class TodoListViewController: UITableViewController {
 //            if let newItem = textField.text {
 //                self.itemArray.append(newItem)
 //            }
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
-            self.tableView.reloadData()
+//            self.defaults.set(self.itemArray, forKey: "TodoListArray") //replaced with encoder as the UserDefaults can't operate with custom types (our to do items are objects of a custom Item class)
+
+            //replaced by a function below
+//            let encoder = PropertyListEncoder()
+//
+//            do {
+//                let data = try encoder.encode(self.itemArray)
+//                try data.write(to: self.dataFilePath!)
+//            } catch {
+//                print("Error encoding Item array /(error)")
+//            }
+//            self.tableView.reloadData()
+
+            self.saveItems()
+
         }
 
         alert.addTextField { (alertTextField) in
@@ -121,6 +137,32 @@ class TodoListViewController: UITableViewController {
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
     }
-    
+
+    //MARK - Model Manipulation Methods
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding Item array \(error)")
+        }
+        tableView.reloadData()
+    }
+
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do{
+            itemArray = try decoder.decode([Item].self, from: data)
+        }
+            catch {
+                print("Error decoding Items array \(error)")
+            }
+        }
+
+    }
+
 }
 

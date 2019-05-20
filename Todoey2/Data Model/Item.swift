@@ -8,8 +8,11 @@
 
 import Foundation
 
-class Item {
+class Item: Codable {
+//    to be en- or de-codable or codablethe class can only contain STANDARD DATA TYPEs
+
     var title: String = ""
     var done: Bool = false
 
 }
+ 
