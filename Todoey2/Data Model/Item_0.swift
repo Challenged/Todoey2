@@ -6,6 +6,7 @@
 //  Copyright © 2019 Rustam Duspayev. All rights reserved.
 //
 
+/* THIS CLASS HAS BEEN REPLACED BY THE COREDATA DATABASE (SEE DATAMODEL)
 import Foundation
 
 class Item: Codable {
@@ -13,6 +14,8 @@ class Item: Codable {
 
     var title: String = ""
     var done: Bool = false
+    var category: String = "No Category"
 
 }
  
+*/
