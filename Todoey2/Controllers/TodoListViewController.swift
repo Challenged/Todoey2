@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: SwipeTableViewController {
 
     var todoItems: Results<Item>?   //["Find Mike", "Buy Eggs", "Destroy Demogorgon"]
 
@@ -59,7 +59,8 @@ class TodoListViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
 //         could also use (to create new cell(s) each time we display them, as opposed to dequeuing and reusing, disappearing cells will be distroyed, and to reappear when scroll back, a new cell will be created):
 //        let cell = UITableViewCell(style: .default, reuseIdentifier: "TodoItemCell")
@@ -164,6 +165,20 @@ class TodoListViewController: UITableViewController {
     func loadItems() {
         todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
+    }
+
+    // Mark: - Delete Data from SwipeCell
+
+    override func updateModel(at indexPath: IndexPath) {
+        if let item2Delete = selectedCategory?.items[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(item2Delete)
+                }
+            } catch {
+                print("Error deleting todo item \(error)")
+            }
+        }
     }
 
 }
