@@ -43,7 +43,19 @@ class CategoryViewController: SwipeTableViewController {
 
         loadCategories()
 
-            }
+//        let navBarColor = UIColor(hexString: "1D9BF6")
+//
+//        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation Bar doesn't exist in CategoryVC") }
+//
+//        navBar.barTintColor = navBarColor
+//
+//        navBar.tintColor = ContrastColorOf(navBarColor!, returnFlat: true)
+//
+//        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor!, returnFlat: true)]
+
+        updateNavBar(withHexCode: "1D9BF6")
+
+    }
 
 
     // MARK: - Table view data source methods

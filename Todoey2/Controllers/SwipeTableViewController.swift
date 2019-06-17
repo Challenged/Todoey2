@@ -8,18 +8,15 @@
 
 import UIKit
 import SwipeCellKit
+import ChameleonFramework
 
 class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
         tableView.rowHeight = 80
+        tableView.separatorStyle = .none
     }
 
     // MARK: - Table view data source
@@ -116,6 +113,24 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
 
     func updateModel(at indexPath: IndexPath) {
         print("Model update called successfully")
+    }
+
+    // MARK: -  Navigation Bar Setup Methods
+
+        func updateNavBar(withHexCode colorHexCode: String) {
+
+            guard let navBar = navigationController?.navigationBar else { fatalError("Navigation Bar doesn't exist in CategoryVC") }
+
+            guard let navBarColor = UIColor(hexString: colorHexCode) else {fatalError("Error setting navBarColor")}
+
+            navBar.barTintColor = navBarColor
+
+            navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+
+            navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+
+//            searchBar.barTintColor = navBarColor //applicable only to the TodoListVC
+
     }
 
 }
